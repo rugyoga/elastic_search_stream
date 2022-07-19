@@ -2,8 +2,17 @@ defmodule ElasticSearchStream.HTTP do
     alias ElasticSearchStream.ES
 
     @type uri_t :: binary()
+    @json_encoding "json"
+    @finch_options [
+        finch: ElasticPool,
+        retry: [delay: 0, max_retries: 3],
+        finch_options: [receive_timeout: 3000]
+      ]
 
     def no_payload(), do: nil
+    def no_options(), do: nil
+    def no_index(), do: nil
+    def json_encoding(), do: @json_encoding
 
     @spec headers(binary()) :: [{binary, binary}]
     def headers(content_type) do
@@ -49,5 +58,16 @@ defmodule ElasticSearchStream.HTTP do
       options
       |> Enum.map_join(",", fn {k, v} -> "#{k}=#{v}" end)
       |> then(&"#{url(index, endpoint, nil)}?#{&1}")
+    end
+
+    def request(verb, url, payload, content_type) do
+        headers = [{:headers, headers(content_type)} | @finch_options]
+
+        case verb do
+            :delete -> Req.delete!(url, headers)
+            :get -> Req.get!(url, headers)
+            :post -> Req.post!(url, payload, headers)
+            :put -> Req.put!(url, payload, headers)
+        end
     end
 end

@@ -1,7 +1,7 @@
 defmodule ElasticSearchStream.Query do
     alias ElasticSearchStream.{ES, PIT}
-    
-    @spec update(ES.query(), ES.response()) :: ES.query()
+
+    @spec update(ES.query_t(), ES.response_t()) :: ES.query_t()
     def update(
             query,
             %Req.Response{body: %{"hits" => %{"hits" => hits}}, status: 200}
@@ -9,7 +9,7 @@ defmodule ElasticSearchStream.Query do
         Map.put(query, :search_after, List.last(hits)["sort"])
     end
 
-    @spec initial(PIT.pit(), ES.query()) :: map
+    @spec initial(PIT.pit_t(), ES.query_t()) :: ES.query_t()
     def initial(pit, query) do
         %{
             query: query,

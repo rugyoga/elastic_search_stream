@@ -4,6 +4,8 @@ defmodule ElasticSearchStream.PIT do
   @expiration "1m"
   @type pit_t :: binary()
 
+  def expiration, do: @expiration
+
   @spec create(ES.index_t()) :: {:ok, pit_t()} | {:error, ES.response_t()}
   def create(index) do
     :post
